@@ -1,0 +1,247 @@
+﻿@model IEnumerable<WebDoAnQLKhachSan.Models.Phong>
+@{
+    ViewBag.Title = "PHONG";
+    Layout = "~/Views/Shared/_LayoutKhachSan.cshtml";
+}
+
+<section class="d-block">
+    <div class="container-fluid p-0 position-relative">
+        <div>
+            <img class="w-100" src="~/Image/bg-lienhe.jpg" alt="Alternate Text" />
+        </div>
+        <div class="text-center text-white position-absolute w-100 top-50 start-50 translate-middle">
+            <h1 style="font-size:68px">ROOMS</h1>
+        </div>
+    </div>
+</section>
+
+<section class="d-block">
+    <div class="container">
+        <form action="/" method="post" style="position: relative; margin-top: -80px; box-shadow: 0px 8px 17px 2px rgba(0, 0, 0, 0.14), 0px 3px 14px 2px rgba(0, 0, 0, 0.12), 0px 5px 5px -3px rgba(0, 0, 0, 0.2); background-color: #faf6f1; padding: 35px">
+            <h2 class="text-center">PHÒNG CÓ SẴN</h2>
+
+        </form>
+    </div>
+</section>
+
+<section>
+    <div style="padding: 100px 0">
+        <div class="container" style="padding: 0 15px">
+            <div class="row mt-5">
+                @foreach (var lp in ViewBag.LoaiPhongs)
+                {
+                    <div class="col-12">
+                        <b>@lp.TenLoai</b>
+                        <hr />
+                    </div>
+                    foreach (var item in Model)
+                    {
+                        if (item.MaLoai == lp.MaLoai)
+                        {
+
+                            <div class="col-12 col-md-3 mb-3">
+                                <div class="text-center lh-lg bg-white" style="box-shadow: rgba(0, 0, 0, 0.15) 2px 0px 50px 0px;">
+                                    <div class="position-relative">
+                                        <img src="~/Image/suite.jpg" alt="" style="max-width: 100%; height: auto; object-fit: cover;" />
+                                        <h3 class="text-white text-center position-absolute w-100" style="bottom: 35px; z-index: 1;">@item.TenPhong</h3>
+                                    </div>
+                                    <div class="p-4 d-flex justify-content-between align-items-center">
+                                        <div class="">Giá: <span class="text-danger">@item.GiaPhong  đ</span></div>
+                                        @if (item.TrangThai == "Trống")
+                                        {
+                                            <div><a data-bs-toggle="modal" data-id="@item.MaPhong" data-bs-target="#datphong" class="btn btn-warning btnDat">Đặt phòng</a></div>
+                                        }
+                                        else
+                                        {
+                                            <div><button class="btn btn-secondary" disabled>Hết phòng</button></div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+
+                        }
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="modal fade" id="datphong" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Đặt phòng</h5>&nbsp;
+                <span class="modal-title h5" id="tenphong"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form class="row mb-4">
+                    <div class="col-6 mt-4">
+                        <label for="hoten" class="form-label">Họ tên khách hàng <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="hoten" name="hoten" required>
+                        <input type="hidden" id="maphong" />
+                        <input type="hidden" id="giaphong" />
+                    </div>
+                    <div class="col-6 mt-4">
+                        <label for="sdt" class="form-label">Số điện thoại <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="sdt" name="sdt" required>
+                    </div>
+
+                    <div class="col-6 mt-4">
+                        <label for="cccd" class="form-label">CCCD <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="cccd" name="cccd" required>
+                    </div>
+                    <div class="col-6 mt-4">
+                        <label for="diachi" class="form-label">Địa chỉ <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="diachi" name="diachi" required>
+                    </div>
+
+                    <div class="col-6 mt-4">
+                        <label for="checkin" class="form-label">Check In <span class="text-danger">*</span></label>
+                        <input type="datetime" class="form-control" id="checkin" name="checkin" required>
+                    </div>
+                    <div class="col-6 mt-4">
+                        <label for="checkout" class="form-label">Check Out <span class="text-danger">*</span></label>
+                        <input type="datetime" class="form-control" id="checkout" name="checkout" required>
+                    </div>
+
+                    <div class="col mt-4 text-end">
+                        <label for="tongtien" class="form-label">Tổng tiền</label>
+                        <input type="text" class="form-control text-end" id="tongtien" name="tongtien" readonly>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" onclick="DatPhong()">Xác nhận</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        function updateTotalAmount() {
+            var gia = parseFloat($('#giaphong').val());
+
+            if (isNaN(gia)) {
+                console.error('Invalid room price');
+                return;
+            }
+
+            var checkinDateString = $('#checkin').val();
+            var checkoutDateString = $('#checkout').val();
+
+            var checkinDateParts = checkinDateString.split("-");
+            var checkoutDateParts = checkoutDateString.split("-");
+
+            if (checkinDateParts.length !== 3 || checkoutDateParts.length !== 3) {
+                console.error('Invalid date format');
+                return;
+            }
+
+            var checkinDate = new Date(checkinDateParts[2], checkinDateParts[1] - 1, checkinDateParts[0]);
+            var checkoutDate = new Date(checkoutDateParts[2], checkoutDateParts[1] - 1, checkoutDateParts[0]);
+
+            if (isNaN(checkinDate.getTime()) || isNaN(checkoutDate.getTime())) {
+                console.error('Invalid check-in or check-out date');
+                return;
+            }
+
+            var nights = (checkoutDate - checkinDate) / (1000 * 60 * 60 * 24);
+            var totalAmount = (nights + 1) * gia;
+
+            $('#tongtien').val(totalAmount);
+        }
+
+        $('#checkin, #checkout, #giaphong').on('change', function () {
+            updateTotalAmount();
+        });
+
+    </script>
+
+    <script>
+        $('.btnDat').on('click', function () {
+            var id = $(this).data('id')
+            getPhongById(id);
+        });
+
+        function getPhongById(id) {
+            $.ajax({
+                url: '/Home/getPhongById',
+                type: 'GET',
+                data: { id: id },
+                success: function (res) {
+                    $('#maphong').val(res.data.MaPhong);
+                    $('#giaphong').val(res.data.GiaPhong);
+                    $('#tenphong').text(res.data.TenPhong);
+                }
+            })
+        }
+
+        function validation(kh) {
+            if (kh.HoTenKH === '' || kh.DienThoai === '' || kh.DiaChi === '' || kh.CCCD === '') {
+                alert('Vui lòng nhập đầy đủ thông tin!');
+                return false;
+            }
+
+            var phoneRegex = /^0[0-9]{9}$/;
+            if (!phoneRegex.test(kh.DienThoai)) {
+                alert('Số điện thoại không hợp lệ! Vui lòng nhập số điện thoại bắt đầu bằng số 0 và có 10 chữ số.');
+                return false;
+            }
+
+            var cccdRegex = /^\d{12}$/;
+            if (!cccdRegex.test(kh.CCCD)) {
+                alert('CCCD có 12 chữ số.');
+                return false;
+            }
+
+            return true;
+        }
+
+        function DatPhong() {
+            var kh = {
+                HoTenKH: $('#hoten').val(),
+                DienThoai: $('#sdt').val(),
+                DiaChi: $('#diachi').val(),
+                CCCD: $('#cccd').val()
+            };
+
+            var dp = {
+                MaPhong: $('#maphong').val(),
+                CheckIn: $('#checkin').val(),
+                CheckOut: $('#checkout').val(),
+                TongTien: $('#tongtien').val(),
+                TrangThai: "Chưa thanh toán"
+            }
+
+            if (!validation(kh))
+                return;
+
+            $.ajax({
+                url: '/Home/DatPhong',
+                method: 'POST',
+                data: {
+                    kh: kh,
+                    dp: dp
+                },
+                success: function (result) {
+                    if (result.success) {
+                        $('#datphong').modal('hide');
+                        alert(result.message);
+                        location.reload(true);
+                    } else {
+                        alert(result.message);
+                    }
+                },
+                error: function () {
+                    console.error('Có lỗi xảy ra khi gửi dữ liệu đến máy chủ.');
+                }
+            });
+        }
+
+
+    </script>
+}   
